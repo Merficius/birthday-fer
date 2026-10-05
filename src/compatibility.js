@@ -26,6 +26,8 @@ export function compareData(dataA, dataB, nameA = 'Tú', nameB = 'Tu Amorcito') 
       shortLabel: q.shortLabel,
       icon: q.icon,
       scores: [],
+      scoresA: [],
+      scoresB: [],
     };
   });
 
@@ -50,16 +52,17 @@ export function compareData(dataA, dataB, nameA = 'Tú', nameB = 'Tu Amorcito') 
       let diff;
       let predictionScoreA;
       let predictionScoreB;
+      let predictionDiffA;
+      let predictionDiffB;
 
       if (q.id === PREDICTION_QUESTION_ID) {
-        // Each person's prediction is checked against the other person's actual
-        // general rating for this song; the category score averages both directions.
+        // Keep each person's prediction accuracy separate.
         predictionScoreA = calculateItemScore(aVal, generalRatingB);
         predictionScoreB = calculateItemScore(bVal, generalRatingA);
-        score = Math.round(((predictionScoreA + predictionScoreB) / 2) * 10) / 10;
-        diff = Math.round((
-          Math.abs(aVal - generalRatingB) + Math.abs(bVal - generalRatingA)
-        ) * 5) / 10;
+        predictionDiffA = Math.round(Math.abs(aVal - generalRatingB) * 10) / 10;
+        predictionDiffB = Math.round(Math.abs(bVal - generalRatingA) * 10) / 10;
+        score = null;
+        diff = null;
       } else {
         score = calculateItemScore(aVal, bVal);
         diff = Math.round(Math.abs(aVal - bVal) * 10) / 10;
@@ -76,14 +79,25 @@ export function compareData(dataA, dataB, nameA = 'Tú', nameB = 'Tu Amorcito') 
         actualB: generalRatingB,
         predictionScoreA,
         predictionScoreB,
+        predictionDiffA,
+        predictionDiffB,
         diff,
         score,
       });
 
-      questionAverages[q.id].scores.push(score);
-      songScoreSum += score;
-      totalScoreSum += score;
-      totalQuestionsCount++;
+      if (q.id === PREDICTION_QUESTION_ID) {
+        questionAverages[q.id].scoresA.push(predictionScoreA);
+        questionAverages[q.id].scoresB.push(predictionScoreB);
+        // Count both individual prediction checks in the overall compatibility.
+        songScoreSum += predictionScoreA + predictionScoreB;
+        totalScoreSum += predictionScoreA + predictionScoreB;
+        totalQuestionsCount += 2;
+      } else {
+        questionAverages[q.id].scores.push(score);
+        songScoreSum += score;
+        totalScoreSum += score;
+        totalQuestionsCount++;
+      }
 
     });
 
@@ -91,7 +105,8 @@ export function compareData(dataA, dataB, nameA = 'Tú', nameB = 'Tu Amorcito') 
     sumSongAveragesA += generalRatingA;
     sumSongAveragesB += generalRatingB;
 
-    const songAvgScore = Math.round((songScoreSum / QUESTIONS.length) * 10) / 10;
+    const songComparisonCount = QUESTIONS.length + 1;
+    const songAvgScore = Math.round((songScoreSum / songComparisonCount) * 10) / 10;
     songScoresA[song.id] = generalRatingA;
     songScoresB[song.id] = generalRatingB;
 
@@ -112,6 +127,16 @@ export function compareData(dataA, dataB, nameA = 'Tú', nameB = 'Tu Amorcito') 
 
   // Process question categories
   const questionSummaries = Object.values(questionAverages).map((item) => {
+    if (item.id === PREDICTION_QUESTION_ID) {
+      const average = (scores) => scores.length
+        ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10
+        : 0;
+      return {
+        ...item,
+        averageScoreA: average(item.scoresA),
+        averageScoreB: average(item.scoresB),
+      };
+    }
     const avg = item.scores.reduce((a, b) => a + b, 0) / (item.scores.length || 1);
     return {
       ...item,
@@ -159,7 +184,9 @@ export function compareData(dataA, dataB, nameA = 'Tú', nameB = 'Tu Amorcito') 
     generosityInsight = `${nameB} calificó con más amor en promedio (${avgRatingB} ★ vs ${avgRatingA} ★).`;
   }
 
-  const sortedQuestions = [...questionSummaries].sort((a, b) => b.averageScore - a.averageScore);
+  const sortedQuestions = questionSummaries
+    .filter((item) => Number.isFinite(item.averageScore))
+    .sort((a, b) => b.averageScore - a.averageScore);
   const strongestQuestion = sortedQuestions[0];
   const weakestQuestion = sortedQuestions[sortedQuestions.length - 1];
   const questionInsights = [

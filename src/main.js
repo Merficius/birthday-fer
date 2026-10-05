@@ -689,14 +689,20 @@ function displayComparisonResults(comp) {
   comp.questionSummaries.forEach((q) => {
     const row = document.createElement('div');
     row.style.marginBottom = '0.75rem';
+    const scoreSummary = q.id === 'q5'
+      ? `<span style="font-family: var(--font-mono); color: var(--kite-blue); font-weight: 700;">${comp.nameA} predijo a ${comp.nameB}: ${q.averageScoreA.toFixed(0)}% · ${comp.nameB} predijo a ${comp.nameA}: ${q.averageScoreB.toFixed(0)}%</span>`
+      : `<span style="font-family: var(--font-mono); color: var(--kite-blue); font-weight: 700;">${q.averageScore.toFixed(0)}%</span>`;
     row.innerHTML = `
       <div style="display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 0.25rem;">
         <span>${q.icon} <strong>${q.text}</strong></span>
-        <span style="font-family: var(--font-mono); color: var(--kite-blue); font-weight: 700;">${q.averageScore.toFixed(0)}%</span>
+        ${scoreSummary}
       </div>
-      <div style="height: 6px; background: #e2e8f0; border-radius: 99px; overflow: hidden;">
-        <div style="width: ${q.averageScore}%; height: 100%; background: #334155; border-radius: 99px;"></div>
-      </div>
+      ${q.id === 'q5'
+        ? `<div style="display: flex; gap: 0.3rem;">
+            <div title="${comp.nameA}: ${q.averageScoreA}%" style="width: 50%; height: 6px; background: #e2e8f0; border-radius: 99px; overflow: hidden;"><div style="width: ${q.averageScoreA}%; height: 100%; background: #334155;"></div></div>
+            <div title="${comp.nameB}: ${q.averageScoreB}%" style="width: 50%; height: 6px; background: #e2e8f0; border-radius: 99px; overflow: hidden;"><div style="width: ${q.averageScoreB}%; height: 100%; background: #dc2626;"></div></div>
+          </div>`
+        : `<div style="height: 6px; background: #e2e8f0; border-radius: 99px; overflow: hidden;"><div style="width: ${q.averageScore}%; height: 100%; background: #334155; border-radius: 99px;"></div></div>`}
     `;
     qListEl.appendChild(row);
   });
@@ -712,13 +718,16 @@ function displayComparisonResults(comp) {
     let qRows = '';
     sb.questions.forEach((q) => {
       const ratingDetails = q.questionId === 'q5'
-        ? `${comp.nameB}: ${q.valA} (real: ${q.actualB}, ${q.predictionScoreA}%) · Predijo ${comp.nameA}: ${q.valB} (real: ${q.actualA}, ${q.predictionScoreB}%)`
+        ? `${q.valA} (real: ${q.actualB}) · ${q.valB} (real: ${q.actualA})`
         : `(${comp.nameA}: ${q.valA} | ${comp.nameB}: ${q.valB})`;
+      const scoreDisplay = q.questionId === 'q5'
+        ? `${comp.nameA}: ${q.predictionScoreA}% · ${comp.nameB}: ${q.predictionScoreB}%`
+        : `${q.score}%`;
       qRows += `
         <div class="breakdown-q-row">
           <span class="breakdown-q-name">${q.icon} ${q.shortLabel}</span>
           <div style="display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end;">
-            <span class="breakdown-q-score">${q.score}%</span>
+            <span class="breakdown-q-score">${scoreDisplay}</span>
             <span class="breakdown-q-ratings">${ratingDetails}</span>
           </div>
         </div>
