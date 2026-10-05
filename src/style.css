@@ -843,15 +843,17 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .score-circular-wrapper {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 150px));
+  justify-content: center;
   align-items: center;
+  gap: 1rem;
   margin: 1.4rem 0;
 }
 
 .score-circle {
-  width: 150px;
-  height: 150px;
+  width: 100%;
+  aspect-ratio: 1;
   border-radius: 50%;
   background: #f8fafc;
   border: 4px solid #334155;
@@ -860,6 +862,11 @@ input[type="range"]::-moz-range-thumb {
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 15px rgba(15, 23, 42, 0.08);
+}
+
+.score-circle-secondary {
+  border-color: #dc2626;
+  background: #fff7f7;
 }
 
 .score-percent {
@@ -876,12 +883,29 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .score-label {
+  max-width: 92%;
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-top: 0.25rem;
+}
+
+@media (max-width: 420px) {
+  .score-circular-wrapper {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+  }
+
+  .score-percent {
+    font-size: 2.2rem;
+  }
+
+  .score-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+  }
 }
 
 /* Meaningful Name Insights Cards */

@@ -115,13 +115,19 @@
           </p>
         </div>
 
-        <!-- Círculo Central con Porcentaje -->
+        <!-- Compatibilidad personalizada: cada predicción aporta a quien la hizo -->
         <div class="score-circular-wrapper">
           <div class="score-circle">
             <div class="score-percent">
-              <span id="final-score-val">0.0</span><span>%</span>
+              <span id="final-score-a">0.0</span><span>%</span>
             </div>
-            <div class="score-label">Compatibilidad</div>
+            <div id="final-score-name-a" class="score-label">Persona A</div>
+          </div>
+          <div class="score-circle score-circle-secondary">
+            <div class="score-percent">
+              <span id="final-score-b">0.0</span><span>%</span>
+            </div>
+            <div id="final-score-name-b" class="score-label">Persona B</div>
           </div>
         </div>
 

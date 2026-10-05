@@ -647,7 +647,10 @@ async function handleFileImport(e) {
 
 // Display Comparison Results
 function displayComparisonResults(comp) {
-  const scoreValEl = document.getElementById('final-score-val');
+  const scoreValAEl = document.getElementById('final-score-a');
+  const scoreValBEl = document.getElementById('final-score-b');
+  const scoreNameAEl = document.getElementById('final-score-name-a');
+  const scoreNameBEl = document.getElementById('final-score-name-b');
   const comparisonNamesEl = document.getElementById('results-comparison-names');
   const generosityBannerEl = document.getElementById('generosity-banner');
   const questionInsightsEl = document.getElementById('question-insights');
@@ -658,7 +661,10 @@ function displayComparisonResults(comp) {
   const valBestSong = document.getElementById('val-best-song');
   const valDebateSong = document.getElementById('val-debate-song');
 
-  scoreValEl.textContent = comp.overallScore.toFixed(1);
+  scoreValAEl.textContent = comp.overallScoreA.toFixed(1);
+  scoreValBEl.textContent = comp.overallScoreB.toFixed(1);
+  scoreNameAEl.textContent = `Compatibilidad de ${comp.nameA}`;
+  scoreNameBEl.textContent = `Compatibilidad de ${comp.nameB}`;
   comparisonNamesEl.textContent = `${comp.nameA} & ${comp.nameB}`;
 
   // Meaningful Names in Action

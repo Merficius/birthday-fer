@@ -33,6 +33,8 @@ export function compareData(dataA, dataB, nameA = 'Tú', nameB = 'Tu Amorcito') 
 
   let totalQuestionsCount = 0;
   let totalScoreSum = 0;
+  let personalScoreSumA = 0;
+  let personalScoreSumB = 0;
   let sumSongAveragesA = 0;
   let sumSongAveragesB = 0;
 
@@ -91,11 +93,15 @@ export function compareData(dataA, dataB, nameA = 'Tú', nameB = 'Tu Amorcito') 
         // Count both individual prediction checks in the overall compatibility.
         songScoreSum += predictionScoreA + predictionScoreB;
         totalScoreSum += predictionScoreA + predictionScoreB;
+        personalScoreSumA += predictionScoreA;
+        personalScoreSumB += predictionScoreB;
         totalQuestionsCount += 2;
       } else {
         questionAverages[q.id].scores.push(score);
         songScoreSum += score;
         totalScoreSum += score;
+        personalScoreSumA += score;
+        personalScoreSumB += score;
         totalQuestionsCount++;
       }
 
@@ -121,6 +127,13 @@ export function compareData(dataA, dataB, nameA = 'Tú', nameB = 'Tu Amorcito') 
   });
 
   // Calculate overall average compatibility
+  const personalQuestionCount = SONGS.length * QUESTIONS.length;
+  const overallScoreA = personalQuestionCount > 0
+    ? Math.round((personalScoreSumA / personalQuestionCount) * 10) / 10
+    : 0;
+  const overallScoreB = personalQuestionCount > 0
+    ? Math.round((personalScoreSumB / personalQuestionCount) * 10) / 10
+    : 0;
   const overallScore = totalQuestionsCount > 0
     ? Math.round((totalScoreSum / totalQuestionsCount) * 10) / 10
     : 0;
@@ -200,6 +213,8 @@ export function compareData(dataA, dataB, nameA = 'Tú', nameB = 'Tu Amorcito') 
     nameA,
     nameB,
     overallScore,
+    overallScoreA,
+    overallScoreB,
     bestSong,
     debateSong,
     favSongA: { ...favSongA, score: maxScoreA },
