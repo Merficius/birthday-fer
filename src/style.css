@@ -854,6 +854,7 @@ input[type="range"]::-moz-range-thumb {
 .score-circle {
   width: 100%;
   aspect-ratio: 1;
+  box-sizing: border-box;
   border-radius: 50%;
   background: #f8fafc;
   border: 4px solid #334155;
@@ -883,13 +884,25 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .score-label {
-  max-width: 92%;
-  font-size: 0.78rem;
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  padding: 0 0.45rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.045em;
   margin-top: 0.25rem;
+  line-height: 1.25;
+  text-align: center;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.score-label-name {
+  max-width: 100%;
+  overflow-wrap: break-word;
 }
 
 @media (max-width: 420px) {
@@ -903,9 +916,131 @@ input[type="range"]::-moz-range-thumb {
   }
 
   .score-label {
-    font-size: 0.62rem;
+    font-size: 0.58rem;
     letter-spacing: 0.04em;
   }
+}
+
+.question-summary-row {
+  margin-bottom: 0.9rem;
+}
+
+.question-summary-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.88rem;
+}
+
+.question-summary-heading > span:first-child {
+  min-width: 0;
+}
+
+.question-summary-regular-score {
+  display: grid;
+  grid-template-columns: auto minmax(3rem, 7rem);
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+}
+
+.question-summary-score,
+.prediction-summary-person strong {
+  color: var(--kite-blue);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.question-summary-track,
+.prediction-summary-track {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #e2e8f0;
+}
+
+.question-summary-track > span,
+.prediction-summary-track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #334155;
+}
+
+.prediction-summary {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0.5rem 0 0.85rem 1.6rem;
+}
+
+.prediction-summary-person {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.2rem 0.75rem;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.prediction-summary-person > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.prediction-summary-track {
+  grid-column: 1 / -1;
+}
+
+.prediction-fill-b {
+  background: #dc2626 !important;
+}
+
+.breakdown-q-row {
+  gap: 0.65rem;
+}
+
+.breakdown-q-values,
+.prediction-breakdown {
+  min-width: 0;
+  text-align: right;
+}
+
+.breakdown-q-values {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.prediction-breakdown {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.prediction-breakdown > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.prediction-breakdown strong {
+  color: #334155;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.prediction-breakdown small {
+  color: var(--text-muted);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 /* Meaningful Name Insights Cards */
