@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kodaline - We Were Only Young • Medidor de Compatibilidad</title>
+  <meta name="description" content="Medidor de compatibilidad musical inspirado en el álbum We Were Only Young de Kodaline." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪁</text></svg>" />
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+
+  <!-- Fondo animado de papalotitos flotando EXCLUSIVAMENTE a los lados -->
+  <div id="floating-kites-container" class="floating-kites-container" aria-hidden="true"></div>
+
+  <!-- Contenedor Principal -->
+  <div class="app-container">
+
+    <!-- Encabezado Inspirado en la Portada del Álbum -->
+    <header class="hero-header">
+      <div class="album-cover-header">
+        <div class="kite-container" aria-hidden="true">
+          <div class="kite-diamond"></div>
+          <div class="kite-tail"></div>
+        </div>
+        <h1 class="cover-artist-title">KODALINE</h1>
+        <div class="cover-album-sub">WE WERE ONLY YOUNG • MEDIDOR DE COMPATIBILIDAD</div>
+      </div>
+
+      <p class="hero-subtitle">
+        Califica cada una de las 12 canciones con números del <strong>0.0 al 10.0 con decimales</strong>.
+        Tus respuestas se guardan automáticamente. Al terminar, guarda tu archivo al final de la página para compartirlo y calcular su compatibilidad.
+      </p>
+
+      <!-- Requisito del Regalo de Amazon -->
+      <div class="gift-requirement-card" role="note">
+        <span class="gift-icon">🎁</span>
+        <div>
+          <strong>Requisito para tu regalo de Amazon:</strong> Se necesita una compatibilidad <strong>mayor al 82.5%</strong> para desbloquear y abrir tu regalo... en caso de fallar nunca lo podrás abrir y tendremos que regresarlo :o
+        </div>
+      </div>
+
+      <!-- Campo de Nombre para Personalizar Comparativas -->
+      <div class="user-name-card">
+        <label for="user-name-field">Tu nombre:</label>
+        <input
+          type="text"
+          id="user-name-field"
+          class="user-name-input"
+          value="Fer"
+          maxlength="25"
+          placeholder="Escribe tu nombre..."
+          title="Tu nombre para personalizar las comparativas"
+        />
+      </div>
+    </header>
+
+    <!-- Barra de Herramientas de Canciones -->
+    <div class="songs-toolbar">
+      <div class="toolbar-title">Canciones del Álbum (12)</div>
+      <button id="btn-toggle-all-songs" class="btn-toggle-all">
+        <span>▼</span> Expandir todas
+      </button>
+    </div>
+
+    <!-- Lista Dinámica de Canciones Separadas y Colapsables -->
+    <main id="songs-container" class="songs-grid" aria-label="Lista de canciones para calificar"></main>
+
+    <!-- Panel de Acciones Únicamente al Final de la Página -->
+    <section class="bottom-action-panel" aria-label="Acciones de guardado y exportación">
+      <h3>¿Listos para calcular su compatibilidad?</h3>
+      <p>
+        Guarda y exporta tu archivo con tus calificaciones y compárteselo a tu amorcito para que lo importe aquí.
+      </p>
+      <div class="panel-btn-group">
+        <button id="btn-save-export-bottom" class="btn btn-primary">
+          <span>💾</span> Guardar y Exportar Archivo
+        </button>
+        <button id="btn-import-bottom" class="btn btn-import" style="display: none;">
+          <span>📥</span> Importar Archivo de tu Amorcito
+        </button>
+      </div>
+    </section>
+
+    <!-- Input de archivo oculto -->
+    <input type="file" id="file-input" accept=".json,application/json" style="display: none;" />
+
+  </div>
+
+  <!-- Modal de Animación y Resultados -->
+  <div id="compatibility-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-dialog">
+
+      <!-- Vista 1: Secuencia Animada de Cálculo -->
+      <div id="modal-calculating" class="calculating-view">
+        <div class="calc-icon" aria-hidden="true">🪁</div>
+        <h2 id="calc-stage-text" class="calc-stage-text">calibrando frecuencias y melodías...</h2>
+
+        <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <div id="calc-progress-fill" class="progress-bar-fill"></div>
+        </div>
+        <div class="progress-numeric">
+          <span id="calc-progress-num">0</span>%
+        </div>
+      </div>
+
+      <!-- Vista 2: Resultados y Comparativa -->
+      <div id="modal-results" class="results-view" style="display: none;">
+        <div class="results-header">
+          <h2 style="font-size: 1.8rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.3rem;">
+            Compatibilidad Musical
+          </h2>
+          <p id="results-comparison-names" style="color: var(--text-muted); font-size: 0.95rem; font-weight: 600;">
+            Resultados de la Comparativa
+          </p>
+        </div>
+
+        <!-- Círculo Central con Porcentaje -->
+        <div class="score-circular-wrapper">
+          <div class="score-circle">
+            <div class="score-percent">
+              <span id="final-score-val">0.0</span><span>%</span>
+            </div>
+            <div class="score-label">Compatibilidad</div>
+          </div>
+        </div>
+
+        <!-- Banner de Quién Calificó con más Amor -->
+        <div id="generosity-banner" class="generosity-banner"></div>
+        <div id="question-insights" class="question-insights" aria-live="polite"></div>
+
+        <!-- Insights de Nombres: Canciones Favoritas y Puntos Clave -->
+        <div class="name-insights-grid">
+          <div class="insight-card">
+            <div class="insight-label" id="label-fav-a">Favorita de Persona A</div>
+            <div class="insight-value" id="val-fav-a">The One For Me</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-label" id="label-fav-b">Favorita de Persona B</div>
+            <div class="insight-value" id="val-fav-b">All I'll Ever Need</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-label">🎶 Su Himno de Mayor Conexión</div>
+            <div class="insight-value" id="val-best-song">The One For Me</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-label">⚡ Canción con Mayor Debate</div>
+            <div class="insight-value" id="val-debate-song">Vultures</div>
+          </div>
+        </div>
+
+        <!-- Desglose por Categoría de Pregunta -->
+        <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin: 1.6rem 0 0.8rem 0;">
+          📊 Promedio por Pregunta
+        </h3>
+        <div id="questions-summary-list"></div>
+
+        <!-- Compatibilidad Canción por Canción (con las 5 preguntas) -->
+        <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin: 1.8rem 0 0.8rem 0;">
+          🔍 Compatibilidad Canción por Canción (con preguntas)
+        </h3>
+        <div id="song-breakdowns-container"></div>
+
+        <!-- Botones de Acción del Modal: Cerrar activa la sorpresa animada -->
+        <div class="modal-actions">
+          <button id="btn-kiss" class="btn btn-kiss" title="Mandar besito virtual">
+            <span>😘</span> Dar un besito
+          </button>
+          <span class="close-results-tooltip" data-tooltip="Me tienes que dar un besito para que se active este botón.">
+            <button id="btn-close-results" class="btn btn-primary" disabled aria-disabled="true" title="Me tienes que dar un besito para que se active este botón.">
+              Cerrar resultados y darle otro besito a tu amorcito
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <!-- Vista 2.5: Animación Intermedia de Suspenso "Un momento..." -->
+      <div id="modal-suspense" class="suspense-animation-view" style="display: none;">
+        <div class="suspense-pulse-kite">🪁</div>
+        <h2 class="suspense-moment-title">Un momento...</h2>
+      </div>
+
+      <!-- Vista 3: "One More Thing" Revelación Final del 100% y Regalo de Amazon -->
+      <div id="modal-one-more-thing" class="one-more-thing-view" style="display: none;">
+        <div class="suspense-box alarm-error-card">
+          <div class="alarm-error-icon" aria-hidden="true">🚨</div>
+          <div class="suspense-quote">
+            Error 500
+          </div>
+          <div class="suspense-sub">
+            Este test fue hecho parcialmente con IA y no puede ser completamente fiable...
+          </div>
+        </div>
+
+        <!-- Botón inicial para que tenga que darle clic y ver el 100% -->
+        <div id="reveal-card-unopened" class="reveal-card-unopened">
+          <button id="btn-trigger-reveal" type="button" class="btn btn-trigger-reveal">
+            <span>🔓</span> Toca aquí para ver nuestra verdadera compatibilidad
+          </button>
+        </div>
+
+        <!-- Tarjeta animada de 0 a 100% -->
+        <div id="hundred-percent-card" class="hundred-percent-card" style="display: none;">
+          <div class="hundred-title">❤️ Nuestra verdadera compatibilidad:</div>
+          <div id="animated-hundred-num" class="hundred-num">0%</div>
+        </div>
+
+        <!-- Desbloqueo del Regalo de Amazon -->
+        <div id="amazon-unlocked-card" class="amazon-unlocked-card" style="display: none;">
+          <div style="font-size: 2.2rem; margin-bottom: 0.4rem;">🎉 🎁</div>
+          <h4>¡Requisito del 82.5% superado!</h4>
+          <p>
+            Tu regalo de Amazon ha sido oficialmente desbloqueado para que lo abras:
+          </p>
+          <button
+            id="btn-amazon-gift"
+            type="button"
+            class="btn btn-amazon-gift"
+          >
+            🎁 Abrir mi Regalo de Amazon
+          </button>
+
+          <!-- Mensaje chistoso al picarle -->
+          <div id="funny-gift-message" class="funny-gift-message" role="alert">
+            <h5>¡Hey!</h5>
+            <p>Tu regalo no está aquí jaja</p>
+            <p>Abre el paquete de Amazon</p>
+          </div>
+        </div>
+
+        <div id="final-modal-actions" class="modal-actions" style="display: none;">
+          <button id="btn-kiss-again" class="btn btn-kiss">
+            <span>😘</span> Mandar otro besito
+          </button>
+          <button id="btn-close-final" class="btn btn-secondary">
+            Cerrar
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Notificación Toast -->
+  <div id="toast" class="toast-notice" role="alert" aria-live="polite">
+    <span id="toast-icon">✨</span>
+    <span id="toast-msg">Mensaje</span>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
